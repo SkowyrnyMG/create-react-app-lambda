@@ -3,7 +3,10 @@ const validate = require('validate-vat');
 
 export function handler(event, context, callback) {
   console.log('queryStringParameters', event.queryStringParameters);
-  const elo = async (err, info) => {
+
+  const { vat } = event.queryStringParameters;
+
+  const response = async (err, info) => {
     try {
       const data = await info;
       callback(null, {
@@ -22,5 +25,5 @@ export function handler(event, context, callback) {
     }
   };
 
-  validate('PL', `8822119889`, elo);
+  validate('PL', vat, response);
 }

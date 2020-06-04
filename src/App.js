@@ -1,74 +1,52 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-class LambdaDemo extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { loading: false, msg: null };
-  }
+const LambdaDemo = () => {
+  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState('');
+  const [inputValue, setInputValue] = useState('');
 
-  // fetch('https://example.com/profile', {
-  //   method: 'POST', // or 'PUT'
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify(data),
-  // })
-  // .then(response => response.json())
-  // .then(data => {
-  //   console.log('Success:', data);
-  // })
-  // .catch((error) => {
-  //   console.error('Error:', error);
-  // });
-
-  handleClick = (api) => (e) => {
+  const handleSubmit = (api) => (e) => {
     e.preventDefault();
-
-    this.setState({ loading: true });
-    fetch('/.netlify/functions/' + api)
+    setLoading(true);
+    fetch('/.netlify/functions/' + api + `?vat=${inputValue}`)
       .then((response) => response.json())
-      .then((json) => this.setState({ loading: false, msg: json.msg }));
+      .then((json) => {
+        setLoading(false);
+        setMsg(json.msg);
+      });
   };
 
-  // this.setState({ loading: false, msg: json.msg })
-  render() {
-    const { loading, msg } = this.state;
-
-    return (
+  return (
+    <>
+      <form action='submit' onSubmit={handleSubmit('verify')}>
+        <input
+          id='vatInput'
+          type='text'
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+        />
+        <button>{loading ? 'Loading...' : 'Sprawdź NIP'}</button>
+      </form>
       <p>
-        {/* <button onClick={this.handleClick('hello')}>
-          {loading ? 'Loading...' : 'Call Lambda'}
-        </button>
-        <button onClick={this.handleClick('async-dadjoke')}>
-          {loading ? 'Loading...' : 'Call Async Lambda'}
-        </button> */}
-        <input id='vatInput' type='text' />
-        <button onClick={this.handleClick('verify')}>
-          {loading ? 'Loading...' : 'Sprawdź NIP'}
-        </button>
         <br />
         <span>{msg}</span>
       </p>
-    );
-  }
-}
+    </>
+  );
+};
 
-class App extends Component {
-  render() {
-    return (
-      <div className='App'>
-        <header className='App-header'>
-          <img src={logo} className='App-logo' alt='logo' />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <LambdaDemo />
-        </header>
-      </div>
-    );
-  }
-}
+const App = () => (
+  <div className='App'>
+    <header className='App-header'>
+      <img src={logo} className='App-logo' alt='logo' />
+      <p>
+        Edit <code>src/App.js</code> and save to reload.
+      </p>
+      <LambdaDemo />
+    </header>
+  </div>
+);
 
 export default App;
